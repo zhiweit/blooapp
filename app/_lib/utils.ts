@@ -7,7 +7,3 @@ export function toTitleCase(str: string) {
 export function splitBulletList(text: string) {
   return text.split("\u2022");
 }
-
-export const isMobileDevice = () => {
-  return /Mobi|Android/i.test(navigator.userAgent);
-};

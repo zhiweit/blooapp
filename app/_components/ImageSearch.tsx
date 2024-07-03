@@ -7,7 +7,6 @@ import ImageUpload from "./ImageUpload";
 import CameraUpload from "./CameraUpload";
 import ImageResponseAccordion from "./ImageResponseAccordion";
 import { Progress } from "@nextui-org/progress";
-import { isMobileDevice } from "../_lib/utils";
 
 export default function ImageSearch() {
   const [imageUploadImage, setImageUploadImage] = useState(""); // base64 representation of image
@@ -26,6 +25,10 @@ export default function ImageSearch() {
   const [cameraUploadDataError, setCameraUploadDataError] = useState("");
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
 
   useEffect(() => {
     setIsMobile(isMobileDevice());
