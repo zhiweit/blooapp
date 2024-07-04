@@ -9,7 +9,6 @@ import {
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
 import Image from "next/image";
-import logo from "../public/bloobin_happy.png";
 
 export default function NavBar() {
   const pathname = usePathname();
