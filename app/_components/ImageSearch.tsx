@@ -1,137 +1,130 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Tabs, Tab } from "@nextui-org/tabs";
-import { ImageIcon } from "@/app/_icons/ImageIcon";
-import { CameraIcon } from "@/app/_icons/CameraIcon";
+import React, { useState } from "react";
 import ImageUpload from "./ImageUpload";
-import CameraUpload from "./CameraUpload";
 import ImageResponseAccordion from "./ImageResponseAccordion";
 import { Progress } from "@nextui-org/progress";
 
 export default function ImageSearch() {
   const [imageUploadImage, setImageUploadImage] = useState(""); // base64 representation of image
-  const [cameraUploadImage, setCameraUploadImage] = useState(""); // base64 representation of image
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isImageUploadDataFetching, setIsImageUploadDataFetching] =
     useState(false);
-  const [isCameraUploadDataFetching, setIsCameraUploadDataFetching] =
-    useState(false);
-  const [imageUploadDataResponse, setImageUploadDataResponse] =
-    useState<ApiVisionResponse>();
-  const [cameraUploadDataResponse, setCameraUploadDataResponse] =
-    useState<ApiVisionResponse>();
+  const [imageSearchAccordionData, setImageSearchAccordionData] =
+    useState<ImageSearchAccordionData>();
 
   const [imageUploadDataError, setImageUploadDataError] = useState("");
-  const [cameraUploadDataError, setCameraUploadDataError] = useState("");
 
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const handleDataResponse = async (
+    data: ApiVisionResponse,
+    imageUrl: string
+  ) => {
+    // initialise feedback to 0 for these data items in db and et back the document id (feedbackId)
+    const initFeedbackRes = await fetch("/api/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        imageUrl: imageUrl,
+        items: data.data,
+      }),
+    });
 
-  const isMobileDevice = () => {
-    return /Mobi|Android/i.test(navigator.userAgent);
+    const { id: newFeedbackId }: { id: string } = await initFeedbackRes.json();
+    const dataWithoutFeedback: ImageSearchAccordionDataItem[] = data.data.map(
+      (item) => {
+        return {
+          ...item,
+          feedback: 0,
+        };
+      }
+    );
+
+    const accordionData: ImageSearchAccordionData = {
+      feedbackId: newFeedbackId,
+      imageUrl: imageUrl,
+      items: dataWithoutFeedback,
+    };
+    setImageSearchAccordionData(accordionData);
   };
 
-  useEffect(() => {
-    setIsMobile(isMobileDevice());
-  }, []);
+  const handleFeedbackUpdate = async (
+    itemIndex: number,
+    feedback: 0 | 1 | 2
+  ) => {
+    const updatedImageSearchAccordionData = {
+      ...imageSearchAccordionData,
+    } as ImageSearchAccordionData;
+
+    updatedImageSearchAccordionData.items[itemIndex].feedback = feedback;
+    setImageSearchAccordionData(updatedImageSearchAccordionData);
+
+    // send patch request to update the feedback for this item
+    const feedbackItems: WasteTypeFeedbackItem[] =
+      updatedImageSearchAccordionData.items.map((item) => {
+        return {
+          item: item.item,
+          source: item.source,
+          feedback: item.feedback,
+        };
+      });
+
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          feedbackId: updatedImageSearchAccordionData.feedbackId,
+          items: feedbackItems,
+        }),
+      });
+    } catch (error) {
+      console.error("Error updating feedback", error);
+    }
+  };
 
   return (
     <div className="flex flex-col w-full items-center justify-center mt-4 gap-4">
-      <Tabs key="bordered" variant="bordered" aria-label="Image search tabs">
-        <Tab
-          key="image-upload"
-          title={
-            <div className="flex items-center space-x-2">
-              <ImageIcon />
-              <span>Image Upload</span>
-            </div>
-          }
-        >
-          <ImageUpload
-            onImageChange={setImageUploadImage}
-            onDataResponse={setImageUploadDataResponse}
-            isDataFetching={setIsImageUploadDataFetching}
-            onDataError={setImageUploadDataError}
+      <ImageUpload
+        onImageChange={setImageUploadImage}
+        onDataResponse={handleDataResponse}
+        isDataFetching={setIsImageUploadDataFetching}
+        onDataError={setImageUploadDataError}
+      />
+
+      {imageUploadImage && (
+        <div className="flex flex-col items-center justify-center my-4 w-auto">
+          <img
+            src={imageUploadImage}
+            alt="Uploaded image"
+            className="w-5/6 h-5/6"
           />
+        </div>
+      )}
 
-          {imageUploadImage && (
-            <div className="flex flex-col items-center justify-center my-4 w-auto">
-              <img
-                src={imageUploadImage}
-                alt="Uploaded image"
-                className="w-5/6 h-5/6"
-              />
-            </div>
-          )}
-
-          {imageUploadDataError ? (
-            <div className="flex flex-col items-center justify-center my-4 w-auto text-red-500">
-              <p>{imageUploadDataError}</p>
-            </div>
-          ) : isImageUploadDataFetching ? (
-            <Progress
-              size="sm"
-              isIndeterminate
-              label="Loading..."
-              aria-label="Loading uploaded image..."
-              className="max-w-md mt-4"
+      {imageUploadDataError ? (
+        <div className="flex flex-col items-center justify-center my-4 w-auto text-red-500">
+          <p>{imageUploadDataError}</p>
+        </div>
+      ) : isImageUploadDataFetching ? (
+        <Progress
+          size="sm"
+          isIndeterminate
+          label="Loading..."
+          aria-label="Loading uploaded image..."
+          className="max-w-md my-4"
+        />
+      ) : (
+        imageSearchAccordionData && (
+          <div className="flex flex-col items-center justify-center my-4 w-full">
+            <ImageResponseAccordion
+              data={imageSearchAccordionData.items}
+              onFeedbackUpdate={handleFeedbackUpdate}
             />
-          ) : (
-            imageUploadDataResponse && (
-              <div className="flex flex-col items-center justify-center my-4 w-auto">
-                <ImageResponseAccordion data={imageUploadDataResponse} />
-              </div>
-            )
-          )}
-        </Tab>
-
-        {!isMobile && (
-          <Tab
-            key="camera-upload"
-            title={
-              <div className="flex items-center space-x-2">
-                <CameraIcon />
-                <span>Camera Upload</span>
-              </div>
-            }
-          >
-            <CameraUpload
-              onImageChange={setCameraUploadImage}
-              cameraOpened={setIsCameraOpen}
-              onDataResponse={setCameraUploadDataResponse}
-              isDataFetching={setIsCameraUploadDataFetching}
-              onDataError={setCameraUploadDataError}
-            />
-            {!isCameraOpen && cameraUploadImage && (
-              <div className="flex flex-col items-center justify-center my-4 w-auto">
-                <img
-                  src={cameraUploadImage}
-                  alt="Camera Uploaded Image"
-                  className="w-5/6 h-5/6"
-                />
-              </div>
-            )}
-            {cameraUploadDataError ? (
-              <div className="flex flex-col items-center justify-center my-4 w-auto text-red-500">
-                <p>{cameraUploadDataError}</p>
-              </div>
-            ) : isCameraUploadDataFetching ? (
-              <Progress
-                size="sm"
-                isIndeterminate
-                label="Loading..."
-                aria-label="Loading camera uploaded image..."
-                className="max-w-md mt-4"
-              />
-            ) : (
-              cameraUploadDataResponse && (
-                <div className="flex flex-col items-center justify-center my-4 w-auto">
-                  <ImageResponseAccordion data={cameraUploadDataResponse} />
-                </div>
-              )
-            )}
-          </Tab>
-        )}
-      </Tabs>
+          </div>
+        )
+      )}
     </div>
   );
 }

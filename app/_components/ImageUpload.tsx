@@ -3,10 +3,11 @@
 import { Button } from "@nextui-org/button";
 import { useRef, useState } from "react";
 import { ImageIcon } from "../_icons/ImageIcon";
+import { getUploadImageRef, uploadDataUrlFile } from "../_lib/firebase";
 
 type ImageUploadProps = {
   onImageChange: (base64Image: string) => void;
-  onDataResponse: (data: ApiVisionResponse) => void;
+  onDataResponse: (data: ApiVisionResponse, imageUrl: string) => void;
   isDataFetching: (isFetching: boolean) => void;
   onDataError: (error: string) => void;
 };
@@ -50,8 +51,23 @@ export default function ImageUpload({
           body: JSON.stringify({ base64_image: base64Image.split(",")[1] }),
         });
         const data = (await res.json()) as ApiVisionResponse;
+
+        //upload image to cloud storage, return the url or base64 image if image upload fails
+        let imageUrl = base64Image;
+        try {
+          const uploadImageRef = getUploadImageRef(
+            `${new Date().getTime()}-${file.name}`
+          );
+          imageUrl = await uploadDataUrlFile(uploadImageRef, base64Image);
+        } catch (error) {
+          console.error(
+            "Error uploading image to cloud storage, saving image url as base64",
+            error
+          );
+        }
+
         isDataFetching(false);
-        onDataResponse(data);
+        onDataResponse(data, imageUrl);
       } catch (error) {
         console.error(error);
         onDataError(
