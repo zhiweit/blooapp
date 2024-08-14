@@ -94,11 +94,11 @@ export default function ImageSearch() {
       />
 
       {imageUploadImage && (
-        <div className="flex flex-col items-center justify-center my-4 w-auto">
+        <div className="relative w-48 h-64 rounded-xl overflow-hidden">
           <img
             src={imageUploadImage}
             alt="Uploaded image"
-            className="w-5/6 h-5/6"
+            className="object-cover"
           />
         </div>
       )}

@@ -50,7 +50,7 @@ export default function NavBar() {
         <NavbarItem>
           <Link
             color={activeItem === "Image Search" ? "primary" : "foreground"}
-            href="/"
+            href="/image-search"
             className={activeItem === "Image Search" ? "font-semibold" : ""}
           >
             Image Search
@@ -63,15 +63,6 @@ export default function NavBar() {
             className={activeItem === "Text Search" ? "font-semibold" : ""}
           >
             Text Search
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link
-            color={activeItem === "Chat" ? "primary" : "foreground"}
-            href="/chat"
-            className={activeItem === "Chat" ? "font-semibold" : ""}
-          >
-            Chat (coming soon)
           </Link>
         </NavbarItem>
       </NavbarContent>

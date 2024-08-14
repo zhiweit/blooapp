@@ -37,7 +37,7 @@ export default function ImageUploadButton({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 mt-4">
+    <div>
       <input
         type="file"
         ref={fileInputRef}

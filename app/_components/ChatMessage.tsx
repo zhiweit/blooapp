@@ -86,7 +86,7 @@ function AssistantChatMessage({ message }: { message: AssistantMessage }) {
     <>
       {/* Display content if there is, otherwise display the thinking messages if there is */}
       {message.content ? (
-        <Card className={"max-w-fit w-5/6 bg-blue-50"} shadow="none">
+        <Card className={"max-w-fit w-5/6 bg-blue-50 "} shadow="none">
           <CardBody className={`text-justify p-4`}>
             <ReactMarkdown
               components={{
@@ -96,7 +96,17 @@ function AssistantChatMessage({ message }: { message: AssistantMessage }) {
                 ul: ({ children }) => (
                   <ul className="list-disc pl-4">{children}</ul>
                 ),
-                li: ({ children }) => <li className="mb-1">{children}</li>,
+                li: ({ children }) => <li className="">{children}</li>,
+                a: ({ children, href }) => (
+                  <a
+                    href={href}
+                    className="text-blue-500 "
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {children}
+                  </a>
+                ),
               }}
             >
               {message.content}
