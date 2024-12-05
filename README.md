@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bloo
 
-## Getting Started
+Bloo is a RAG app with chat feature (supporting image upload) to answer recycling questions, using knowledge from NEA items and web search (Tavily). Function is similar to ChatGPT where user can upload image and the app answers the user's question based on database information, online website(s), and fall back to ChatGPT should it be unable to answer user's question.
 
-First, run the development server:
+## Chat Feature
+Demo of the chat feature
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+https://github.com/user-attachments/assets/5199bd0a-6656-4e2e-8642-6e353b7a7723
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Chat architecture
+![chat-architecture](https://github.com/user-attachments/assets/cd0a8ea0-1615-46e8-b6c3-07a177f8076a)
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Technologies
+- React + Next: Full stack javascript framework
+- Langgraph: Model RAG workflow that involve cycles e.g. checking if retrieved docs are relevant.
+- FastAPI: Backend API endpoints
+- Cloud firestore: Storage of recyclable item data
+- Typesense: Support hybrid search (FTS + vector search) on cloud firestore database
+- Google Cloud Run: Serverless deployment of backend API
+- OpenAI: Embedding models + Chat models
