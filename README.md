@@ -21,3 +21,7 @@ https://github.com/user-attachments/assets/5199bd0a-6656-4e2e-8642-6e353b7a7723
 - Typesense: Support hybrid search (FTS + vector search) on cloud firestore database
 - Google Cloud Run: Serverless deployment of backend API
 - OpenAI: Embedding models + Chat models
+
+<a href="https://mightymagnus.notion.site/Bloo-API-Documentation-d9fd5834240346b9acc5274b0112e8d5" target="_blank">Further documentation in Notion</a>
+
+
