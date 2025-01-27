@@ -3,9 +3,13 @@
 Bloo is a RAG app with chat feature (supporting image upload) to answer recycling questions, using knowledge from NEA items and web search (Tavily). Function is similar to ChatGPT where user can upload image and the app answers the user's question based on database information, online website(s), and fall back to ChatGPT should it be unable to answer user's question.
 
 ## Chat Feature
-Demo of the chat feature
+Chat demo
 
-https://github.com/user-attachments/assets/5199bd0a-6656-4e2e-8642-6e353b7a7723
+
+https://github.com/user-attachments/assets/f3d87ced-1d0b-4172-af45-b8ea5a6a3058
+
+
+
 
 
 
